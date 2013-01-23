@@ -21,7 +21,12 @@ if($items.Length -eq 1) {
 }
 else {
     $PackageFilePath = SelectOrUseProvided $PackageFile $items  { $true } "Package" { 
-        $_.Name.Substring("NuGetGallery_".Length, $_.Name.Length - "NuGetGallery_".Length - ".cspkg".Length)
+        $parsed = ParsePackageName $_.Name
+        if(!$parsed) {
+            $_.Name
+        } else {
+            "$($parsed.Hash) on $($parsed.Branch) - ($($parsed.Name))"
+        }
     }
 }
 Write-Host "Pushing $PackageFilePath to $StorageAccountName"

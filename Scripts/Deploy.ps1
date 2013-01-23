@@ -29,13 +29,17 @@ if(!$SourceBlob) {
     $BlobClient = [Microsoft.WindowsAzure.StorageClient.CloudStorageAccountStorageClientExtensions]::CreateCloudBlobClient($Account)
     $ContainerRef = $BlobClient.GetContainerReference("deployment-packages");
     $BlobRef = SelectOrUseProvided $CommitId ($ContainerRef.ListBlobs()) { ([Microsoft.WindowsAzure.StorageClient.CloudBlockBlob]$_).Name -like "NuGetGallery_*.cspkg" } "Deployable Packages" {
-        $blob = ([Microsoft.WindowsAzure.StorageClient.CloudBlockBlob]$_)
-        $blob.Name.Substring("NuGetGallery_".Length, $blob.Name.Length - "NuGetGallery_".Length - ".cspkg".Length);
+        $parsed = ParsePackageName $_.Name
+        if(!$parsed) {
+            $_.Name
+        } else {
+            "$($parsed.Hash) on $($parsed.Branch) - ($($parsed.Name))"
+        }
     }
     $SourceBlob = $BlobRef.Uri
-    $hash = $BlobRef.Name.Substring("NuGetGallery_".Length, $BlobRef.Name.Length - "NuGetGallery_".Length - ".cspkg".Length);
+    $parsed = ParsePackageName $BlobRef.Name
     $DateName = (Get-Date -format "MMMdd @ HHmm")
-    $DeploymentName = "$DateName ($($hash.Substring(0,10)))"
+    $DeploymentName = "$DateName ($($parsed.Hash) on $($parsed.Branch))"
 }
 
 # Select the Subscription

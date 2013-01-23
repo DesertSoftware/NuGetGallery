@@ -9,6 +9,7 @@
       <Setting name="Gallery.AzureStorageConnectionString" />
       <Setting name="Gallery.AzureDiagnosticsConnectionString" />
       <Setting name="Gallery.AzureStatisticsConnectionString" />
+      <Setting name="Gallery.AzureStoragePrefix" />
       <Setting name="Gallery.AzureCacheEndpoint" />
       <Setting name="Gallery.AzureCdnHost" />
       <Setting name="Gallery.Sql.NuGetGallery" />

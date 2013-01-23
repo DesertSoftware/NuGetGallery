@@ -35,6 +35,20 @@ function Get-StorageAccountConnectionString {
     "DefaultEndpointsProtocol=https;AccountName=$($name);AccountKey=$($StorageAccountKeyContext.Primary)";
 }
 
+$_packageNameRegex = [regex]"NuGetGallery_(?<hash>[0-9a-fA-F]+)_(?<branch>.*)\.cspkg"
+function ParsePackageName {
+    param($name)
+
+    $m = $_packageNameRegex.Match($name)
+    if($m.Success) {
+        @{
+            "Name" = $name;
+            "Hash" = $m.Groups["hash"].Value;
+            "Branch" = $m.Groups["branch"].Value;
+        }
+    }
+}
+
 function Get-AzureSdkPath {
     param($azureSdkPath)
     if(!$azureSdkPath) {
