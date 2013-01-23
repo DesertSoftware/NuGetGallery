@@ -21,6 +21,12 @@ if([String]::Equals([Environment]::UserDomainName, "REDMOND", "OrdinalIgnoreCase
 
 $AzureSdkPath = Get-AzureSdkPath $AzureSdkPath
 
+# Select the Subscription
+$Subscription = SelectOrUseProvided $TargetSubscription (Get-AzureSubscription) { $true } "Subscription" { $_.SubscriptionName }
+Write-Host "** Target Subscription: $($Subscription.SubscriptionName)" -ForegroundColor Black -BackgroundColor Green
+Select-AzureSubscription $Subscription.SubscriptionName
+Set-AzureSubscription -SubscriptionName $Subscription.SubscriptionName -CurrentStorageAccount $StorageAccountName
+
 if(!$SourceBlob) {
     # Get a list of available packages
     [System.Reflection.Assembly]::LoadFrom("$AzureSdkPath\bin\Microsoft.WindowsAzure.StorageClient.dll") | Out-Null
@@ -41,12 +47,6 @@ if(!$SourceBlob) {
     $DateName = (Get-Date -format "MMMdd @ HHmm")
     $DeploymentName = "$DateName ($($parsed.Hash) on $($parsed.Branch))"
 }
-
-# Select the Subscription
-$Subscription = SelectOrUseProvided $TargetSubscription (Get-AzureSubscription) { $true } "Subscription" { $_.SubscriptionName }
-Write-Host "** Target Subscription: $($Subscription.SubscriptionName)" -ForegroundColor Black -BackgroundColor Green
-Select-AzureSubscription $Subscription.SubscriptionName
-Set-AzureSubscription -SubscriptionName $Subscription.SubscriptionName -CurrentStorageAccount $StorageAccountName
 
 # Select the Cloud Service
 $Service = SelectOrUseProvided $TargetService (Get-AzureService) { !$_.ServiceName.EndsWith("ops", "OrdinalIgnoreCase") } "Service" { $_.ServiceName }
