@@ -1,8 +1,11 @@
 param(
+    [Parameter(Mandatory=$false)][string]$Subscription = "NuGet Gallery Preview",
 	[Parameter(Mandatory=$false)][string]$StorageAccountName = "nugetgallerydev",
 	[Parameter(Mandatory=$false)][string]$PackageFile = $null,
     [Parameter(Mandatory=$false)][string]$AzureSdkPath = $null
 )
+
+Select-AzureSubscription $Subscription
 
 # Import common stuff
 $ScriptRoot = (Split-Path -parent $MyInvocation.MyCommand.Definition)
